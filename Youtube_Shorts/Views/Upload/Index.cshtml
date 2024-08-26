@@ -1,0 +1,9 @@
+﻿@model UploadVideoViewModel
+
+<form asp-action="Upload" method="post" enctype="multipart/form-data">
+    <input type="file" asp-for="VideoFile" accept="video/*" required />
+    <input type="text" asp-for="Title" placeholder="Title" required />
+    <textarea asp-for="Description" placeholder="Description" required></textarea>
+    <input type="text" asp-for="Hashtags" placeholder="Hashtags" />
+    <button type="submit">Upload Video</button>
+</form>

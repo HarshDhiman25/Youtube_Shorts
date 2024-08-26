@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    @if (User.Identity.IsAuthenticated)
+    {
+        <h1 class="display-4">Welcome, @ViewBag.UserName</h1>  <!-- Display only the user's name -->
+        <p>Email: @ViewBag.UserEmail</p>
+        @if (!string.IsNullOrEmpty(ViewBag.UserProfilePicture))
+        {
+            <img src="@ViewBag.UserProfilePicture" alt="Profile Picture" style="border-radius: 50%; width: 100px; height: 100px;" />
+        }
+        else
+        {
+            <p>No profile picture available.</p>
+        }
+    }
+    else
+    {
+        <h1 class="display-4">Welcome, Guest</h1>
+        <p>Please log in to view your information.</p>
+    }
+</div>
