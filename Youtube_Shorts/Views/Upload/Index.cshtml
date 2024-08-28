@@ -1,9 +1,89 @@
-﻿@model UploadVideoViewModel
+﻿
+  @model UploadVideoViewModel
 
-<form asp-action="UploadVideo" method="post" enctype="multipart/form-data">
-    <input type="file" asp-for="VideoFile" accept="video/*" required />
-    <input type="text" asp-for="Title" placeholder="Title" required />
-    <textarea asp-for="Description" placeholder="Description" required></textarea>
-    <input type="text" asp-for="Hashtags" placeholder="Hashtags" />
-    <button type="submit">Upload Video</button>
-</form>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded">
+                <div class="card-header text-center bg-primary text-white">
+                    <h4>Upload Your Video</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="UploadVideo" method="post" enctype="multipart/form-data" id="uploadForm">
+                        <div class="form-group mb-3">
+                            <label asp-for="VideoFile" class="form-label">Select Video</label>
+                            <input type="file" class="form-control" asp-for="VideoFile" accept="video/*" required onchange="validateAndPreviewVideo(this)" />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Title" class="form-label">Title</label>
+                            <input type="text" class="form-control" asp-for="Title" placeholder="Enter video title" required />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea class="form-control" asp-for="Description" placeholder="Enter video description" rows="3" required></textarea>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Hashtags" class="form-label">Hashtags</label>
+                            <input type="text" class="form-control" asp-for="Hashtags" placeholder="Enter hashtags (comma-separated)" />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Video Preview</label>
+                            <video id="videoPreview" controls style="width: 100%; display: none;"></video>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success w-100">Upload Video</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function validateAndPreviewVideo(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const video = document.createElement('video');
+        const objectURL = URL.createObjectURL(file);
+        video.src = objectURL;
+
+        video.onloadedmetadata = function() {
+            // Validate video length (e.g., max 60 seconds)
+            const maxDuration = 60;
+            if (video.duration > maxDuration) {
+                alert('The video is too long. Maximum length is ' + maxDuration + ' seconds.');
+                input.value = '';  // Clear the input
+                URL.revokeObjectURL(objectURL);
+                return;
+            }
+
+            // Validate aspect ratio (e.g., 16:9)
+            const aspectRatio = video.videoWidth / video.videoHeight;
+            const desiredAspectRatio = 16 / 9;
+            if (aspectRatio !== desiredAspectRatio) {
+                alert('The video aspect ratio should be 16:9.');
+                input.value = '';  // Clear the input
+                URL.revokeObjectURL(objectURL);
+                return;
+            }
+
+            // Show the video preview
+            const preview = document.getElementById('videoPreview');
+            preview.src = objectURL;
+            preview.style.display = 'block';
+
+            // Revoke the object URL after the preview is loaded
+            preview.onloadeddata = function() {
+                URL.revokeObjectURL(objectURL);
+            };
+        };
+    }
+</script>
+
